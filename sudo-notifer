@@ -1,0 +1,13 @@
+#!/bin/bash
+while inotifywait -e modify /var/log/auth.log;
+do
+word=`tail -n1 /var/log/auth.log | grep 'user NOT in sudoers'`
+if [[ $word ]]; then
+echo '{"text":"'$word'"}' > sendtoslack
+curl -X POST \
+-H 'Content-type: application/json' \
+--data @sendtoslack \
+<webhook url>
+rm sendtoslack
+fi
+done
